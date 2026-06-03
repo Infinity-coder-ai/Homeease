@@ -1,0 +1,46 @@
+name: homease
+description: Smart Home Services Booking App
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  http: ^1.2.0
+  shared_preferences: ^2.2.2
+  cupertino_icons: ^1.0.6
+  flutter_riverpod: ^2.5.1   # State management — manages loading/error/success state
+  image_picker: ^1.0.7
+  flutter_svg: ^2.0.10
+  url_launcher: ^6.2.6
+  flutter_secure_storage: ^8.1.0
+  flutter_native_splash: ^2.4.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+  flutter_launcher_icons: ^0.13.1
+
+flutter_native_splash:
+  color: "#6F6CEB"
+  image: assets/splash_icon.png
+  android: true
+  ios: false
+  android_12:
+    color: "#6F6CEB"
+    icon_background_color: "#6F6CEB"
+    image: assets/splash_icon.png
+
+flutter_icons:
+  android: true
+  ios: false
+  image_path: "assets/app_icon.png"
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/
