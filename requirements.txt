@@ -1,0 +1,7 @@
+fastapi==0.136.3
+psycopg2==2.9.11
+pwdlib==0.3.0
+pydantic==2.13.4
+pydantic_settings==2.14.1
+python_jose==3.5.0
+SQLAlchemy==2.0.50
