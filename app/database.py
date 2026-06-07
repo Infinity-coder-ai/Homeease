@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, update
 from .config import settings
 from urllib.parse import quote_plus
 from sqlalchemy.orm import sessionmaker
@@ -26,3 +26,17 @@ def get_db():
     yield db
   finally:
     db.close()
+
+
+def init_db():
+  """Initialize database schema and run migrations."""
+  from . import models
+  
+  models.Base.metadata.create_all(bind=engine)
+  
+  with engine.begin() as conn:
+    conn.execute(
+      update(models.ProviderDocuments)
+      .where(models.ProviderDocuments.document_type == 'ID_PROOF')
+      .values(document_type='AADHAAR')
+    )

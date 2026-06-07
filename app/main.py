@@ -1,6 +1,5 @@
 from fastapi import FastAPI
-from sqlalchemy import update
-from .database import engine
+from .database import init_db
 from . import models
 
 from .routers import user,auth,create_provider,create_services,provider_availability,provider_documents,bookings,booking_status,service_catalog ,provider_services,provider_stats,notifications,support
@@ -10,19 +9,7 @@ from .routers.show_bookings import customer_bookings ,provider_bookings,search_p
 from .routers.booking_rating import rating
 
 
-def ensure_provider_workflow_columns():
-    """Keep the database compatible with the current SQLAlchemy models."""
-    models.Base.metadata.create_all(bind=engine)
-
-    with engine.begin() as conn:
-        conn.execute(
-            update(models.ProviderDocuments)
-            .where(models.ProviderDocuments.document_type == 'ID_PROOF')
-            .values(document_type='AADHAAR')
-        )
-
-
-ensure_provider_workflow_columns()
+init_db()
 app = FastAPI()
 
 app.include_router(user.router) # added new route in app object
