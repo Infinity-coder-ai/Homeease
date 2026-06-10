@@ -4,6 +4,7 @@ from sqlalchemy.orm import session
 
 from .. import database, models, utils
 from ..email_service import send_email
+from ..email_templates import password_reset_email, password_reset_page, signup_otp_email
 from datetime import datetime, timedelta, timezone
 
 from ..email_tokens import (
@@ -61,23 +62,15 @@ def signup_start(payload: dict, db: session = Depends(database.get_db)):
         intent.expires_at = now + timedelta(minutes=OTP_TTL_MINUTES)
         intent.verified_at = None
 
-    html = f"""
-    <div style="font-family:Arial,sans-serif">
-      <h2>HomeEase Email Verification</h2>
-      <p>Your OTP is:</p>
-      <p style="font-size:28px;font-weight:700;letter-spacing:4px">{otp}</p>
-      <p>This code expires in 10 minutes.</p>
-    </div>
-    """
     try:
-        send_email(email, "Verify your HomeEase email", html)
+        send_email(email, "Verify your HomeEase email", signup_otp_email(otp))
     except Exception as e:
         # IMPORTANT:
         # We intentionally DO NOT commit the signup intent if email sending fails.
         # This prevents "signup data stored in DB even though verification not done"
         # when the OTP couldn't be delivered.
         db.rollback()
-        # Return exact failure so we can fix Resend config/delivery issues.
+        # Return exact failure so we can fix Brevo config/delivery issues.
         raise HTTPException(status_code=500, detail=f"Failed to send email: {e}")
 
     # Email successfully sent; now we persist the intent + OTP hash.
@@ -146,16 +139,8 @@ def signup_resend(payload: dict, db: session = Depends(database.get_db)):
     intent.otp_hash = hash_otp(otp)
     intent.expires_at = now + timedelta(minutes=OTP_TTL_MINUTES)
 
-    html = f"""
-    <div style="font-family:Arial,sans-serif">
-      <h2>HomeEase Email Verification</h2>
-      <p>Your OTP is:</p>
-      <p style="font-size:28px;font-weight:700;letter-spacing:4px">{otp}</p>
-      <p>This code expires in 10 minutes.</p>
-    </div>
-    """
     try:
-        send_email(email, "Verify your HomeEase email", html)
+        send_email(email, "Verify your HomeEase email", signup_otp_email(otp))
     except Exception as e:
         # Same rule as signup_start: don't persist changes if we couldn't deliver the OTP.
         db.rollback()
@@ -195,16 +180,8 @@ def send_signup_email_otp(payload: dict, db: session = Depends(database.get_db))
     )
     db.add(row)
     db.commit()
-    html = f"""
-    <div style="font-family:Arial,sans-serif">
-      <h2>HomeEase Email Verification</h2>
-      <p>Your OTP is:</p>
-      <p style="font-size:28px;font-weight:700;letter-spacing:4px">{otp}</p>
-      <p>This code expires in 10 minutes.</p>
-    </div>
-    """
     try:
-        send_email(email, "Verify your HomeEase email", html)
+        send_email(email, "Verify your HomeEase email", signup_otp_email(otp))
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to send email: {e}")
 
@@ -251,16 +228,8 @@ def forgot_password(
     base = str(request.base_url).rstrip("/")
     link = f"{base}/auth/password/reset-page?token={token}"
 
-    html = f"""
-    <div style="font-family:Arial,sans-serif">
-      <h2>Reset your HomeEase password</h2>
-      <p>Click the link below to set a new password (expires in 30 minutes):</p>
-      <p><a href="{link}">Reset Password</a></p>
-      <p>If you didn't request this, you can ignore this email.</p>
-    </div>
-    """
     try:
-        send_email(email, "Reset your HomeEase password", html)
+        send_email(email, "Reset your HomeEase password", password_reset_email(link))
     except Exception as e:
         # Clean up the token if we couldn't email it (avoid lingering valid tokens).
         try:
@@ -285,22 +254,7 @@ def reset_page(token: str):
     Minimal HTML page to complete password reset in a browser.
     This keeps the reset-link flow functional even without deep links.
     """
-    safe_token = token.replace('"', "").replace("<", "").replace(">", "")
-    html = f"""
-    <html>
-      <head><meta name="viewport" content="width=device-width, initial-scale=1"/></head>
-      <body style="font-family:Arial,sans-serif;max-width:420px;margin:40px auto;padding:12px">
-        <h2>Reset Password</h2>
-        <form method="post" action="/auth/password/reset/confirm-form">
-          <input type="hidden" name="token" value="{safe_token}"/>
-          <label>New password</label><br/>
-          <input name="password" type="password" style="width:100%;padding:10px;margin:8px 0" /><br/>
-          <button type="submit" style="width:100%;padding:12px">Set Password</button>
-        </form>
-      </body>
-    </html>
-    """
-    return html
+    return password_reset_page(token)
 
 
 @router.post("/auth/password/reset/confirm")

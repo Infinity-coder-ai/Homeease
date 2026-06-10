@@ -31,7 +31,7 @@ class AuthApi {
               'phone': phone,
             }),
           )
-          .timeout(const Duration(seconds: 15));
+          .timeout(ApiHttpHelpers.requestTimeout);
 
       final data = jsonDecode(response.body); //Converts the JSON response string from FastAPI into a Dart Map
 
@@ -66,7 +66,7 @@ class AuthApi {
             body:
                 'username=${Uri.encodeComponent(email)}&password=${Uri.encodeComponent(password)}',
           )
-          .timeout(const Duration(seconds: 15));
+          .timeout(ApiHttpHelpers.requestTimeout);
 
       final data = jsonDecode(response.body);
 
@@ -101,7 +101,7 @@ class AuthApi {
             headers: {'Content-Type': 'application/json'},
             body: jsonEncode({'email': email}),
           )
-          .timeout(const Duration(seconds: 15));
+          .timeout(ApiHttpHelpers.requestTimeout);
 
       final data = jsonDecode(response.body);
       if (response.statusCode == 200) {
@@ -128,7 +128,7 @@ class AuthApi {
             headers: {'Content-Type': 'application/json'},
             body: jsonEncode({'email': email}),
           )
-          .timeout(const Duration(seconds: 15));
+          .timeout(ApiHttpHelpers.requestTimeout);
 
       final data = jsonDecode(response.body);
       if (response.statusCode == 200) {
@@ -152,7 +152,7 @@ class AuthApi {
             headers: {'Content-Type': 'application/json'},
             body: jsonEncode({'email': email, 'otp': otp}),
           )
-          .timeout(const Duration(seconds: 15));
+          .timeout(ApiHttpHelpers.requestTimeout);
 
       final data = jsonDecode(response.body);
       if (response.statusCode == 201) {
@@ -180,7 +180,7 @@ class AuthApi {
             headers: {'Content-Type': 'application/json'},
             body: jsonEncode({'email': email}),
           )
-          .timeout(const Duration(seconds: 15));
+          .timeout(ApiHttpHelpers.requestTimeout);
 
       final data = jsonDecode(response.body);
       if (response.statusCode == 200) {
@@ -208,7 +208,7 @@ class AuthApi {
             headers: {'Content-Type': 'application/json'},
             body: jsonEncode({'token': token, 'password': newPassword}),
           )
-          .timeout(const Duration(seconds: 15));
+          .timeout(ApiHttpHelpers.requestTimeout);
 
       final data = jsonDecode(response.body);
       if (response.statusCode == 200) {
@@ -238,7 +238,7 @@ class AuthApi {
               'Authorization': 'Bearer $token',
             },
           )
-          .timeout(const Duration(seconds: 15));
+          .timeout(ApiHttpHelpers.requestTimeout);
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body) as Map<String, dynamic>;

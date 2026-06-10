@@ -14,11 +14,14 @@ class Settings(BaseSettings):
     cloudinary_cloud_name: str = Field(..., env="CLOUDINARY_CLOUD_NAME")
     cloudinary_api_key: str = Field(..., env="CLOUDINARY_API_KEY")
     cloudinary_api_secret: str = Field(..., env="CLOUDINARY_API_SECRET")
-    smtp_server: str = Field(..., env="SMTP_SERVER")
-    smtp_port: int = Field(..., env="SMTP_PORT")
-    smtp_email: str = Field(..., env="SMTP_EMAIL")
-    smtp_password: str = Field(..., env="SMTP_PASSWORD")
     from_name: str = Field("HomeEase", env="FROM_NAME")
+    brevo_api_key: str = Field("", env="BREVO_API_KEY")
+    brevo_sender_email: str = Field("", env="BREVO_SENDER_EMAIL")
+    brevo_sender_name: str = Field("HomeEase", env="BREVO_SENDER_NAME")
+    brevo_smtp_server: str = Field("smtp-relay.brevo.com", env="BREVO_SMTP_SERVER")
+    brevo_smtp_port: int = Field(587, env="BREVO_SMTP_PORT")
+    brevo_smtp_login: str = Field("", env="BREVO_SMTP_LOGIN")
+    brevo_smtp_key: str = Field("", env="BREVO_SMTP_KEY")
 
 
 

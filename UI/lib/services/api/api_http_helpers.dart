@@ -5,9 +5,11 @@ import 'package:http/http.dart' as http;
 class ApiHttpHelpers {
   ApiHttpHelpers._();
 
+  static const Duration requestTimeout = Duration(seconds: 60);
+
   static const Map<String, dynamic> connectionError = {
     'success': false,
-    'message': 'Unable to reach the server. Check your connection and IP.',
+    'message': 'Unable to reach the server. Check your connection or wait for the hosted backend to wake up.',
   };
 
   static Map<String, dynamic> failureFromResponse(
